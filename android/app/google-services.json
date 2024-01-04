@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353984582214",
+    "project_id": "hawas-biya-algeriaguide",
+    "storage_bucket": "hawas-biya-algeriaguide.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353984582214:android:75766d3201849ced18f047",
+        "android_client_info": {
+          "package_name": "com.example.projetiam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3w6wgn2x7o-HQ8yWK6QlGTucNEme6Q1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
