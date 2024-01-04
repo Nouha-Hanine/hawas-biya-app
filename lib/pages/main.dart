@@ -9,6 +9,7 @@ import 'package:projetiam/firebase_options.dart';
 import 'login.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
