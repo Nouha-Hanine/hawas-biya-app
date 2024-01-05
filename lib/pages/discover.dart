@@ -147,15 +147,19 @@ class _DiscoverPageState extends  State<DiscoverPage> {
       // Récupérez la référence de la collection 'regions' dans Firestore
       QuerySnapshot regionsSnapshot =
       await FirebaseFirestore.instance.collection('regions').get();
-
+      print('Regions snapshot: $regionsSnapshot');
       // Mappez les documents Firestore en objets Region
       List<Region> regions = regionsSnapshot.docs
-          .map((doc) => Region(
-        id: doc.id,
-        idReg: doc['id-reg'] as String? ?? '',
-        name: doc['nom-reg'] as String? ?? '',
-        imageUrl: doc['photo-reg'] as String? ?? '',
-      ))
+          .map((doc) {
+        final imageUrl = doc['photo-reg'] as String? ?? '';
+        print('Image URL for region ${doc['nom-reg']}: $imageUrl');
+        return Region(
+          idr: doc.id,
+          idReg: doc['id-reg'] as String? ?? '',
+          namer: doc['nom-reg'] as String? ?? '',
+          photoReg: imageUrl,
+        );
+      })
           .toList();
 
       return regions;
@@ -167,19 +171,25 @@ class _DiscoverPageState extends  State<DiscoverPage> {
 
   Future<List<Category>> getCategories() async {
     try {
-      // Récupérez la référence de la collection 'categories' dans Firestore
-      QuerySnapshot categorySnapshot =
+      // Récupérez la référence de la collection 'regions' dans Firestore
+      QuerySnapshot categoriesSnapshot =
       await FirebaseFirestore.instance.collection('categories').get();
+      print('Regions snapshot: $categoriesSnapshot');
 
       // Mappez les documents Firestore en objets Category
-      List<Category> categories = categorySnapshot.docs
-          .map((doc) => Category(
-        id: doc.id,
-        idCat: doc['id-cat'] as String? ?? '',
-        name: doc['nom-cat'] as String? ?? '',
-        imageUrl: doc['photo-cat'] as String? ?? '',
-      ))
+      List<Category> categories = categoriesSnapshot.docs
+          .map((doc) {
+        final imageUrl = doc['photo-cat'] as String? ?? '';
+        print('Image URL for category ${doc['nom-cat']}: $imageUrl');
+        return Category(
+          id: doc.id,
+          idCat: doc['id-cat'] as String? ?? '',
+          name: doc['nom-cat'] as String? ?? '',
+          photoCat: imageUrl,
+        );
+      })
           .toList();
+      
 
       return categories;
     } catch (e) {
