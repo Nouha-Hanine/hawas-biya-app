@@ -7,45 +7,26 @@ import 'favorites.dart';
 import 'profile.dart';
 import 'details.dart';
 class Region {
-  final String id;
+  final String idr;
   final String idReg;
-  final String name;
-  final String imageUrl;
+  final String namer;
+  final String photoReg;
 
-  Region({required this.id,required this.idReg, required this.name, required this.imageUrl});
-
-
+  Region({required this.idr,required this.idReg, required this.namer, required this.photoReg});
 }
-class Category {
-  final String id;
-  final String name;
-  final String idCat;
-  final String imageUrl;
 
-  Category({required this.id,required this.idCat, required this.name, required this.imageUrl});
-}
-class CategoryCard extends StatefulWidget {
-  final Category category;
+class RegionCard extends StatefulWidget {
+  final Region region;
 
-  CategoryCard({required this.category});
+  RegionCard({super.key, required this.region});
 
   @override
   State<StatefulWidget> createState() {
-    return _CategoryCardState();
+    return _RegionCardState();
   }
 }
 
-class _CategoryCardState extends State<CategoryCard> {
-  String baseStorageUrl =
-      "https://firebasestorage.googleapis.com/v0/b/hawas-biya-algeriaguide.appspot.com/o/files%2F";
-  late String imageUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    imageUrl = baseStorageUrl + widget.category.imageUrl;
-  }
-
+class _RegionCardState extends State<RegionCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -61,15 +42,20 @@ class _CategoryCardState extends State<CategoryCard> {
                 width: 2.0,
               ),
               borderRadius: BorderRadius.circular(8.0),
-              image: DecorationImage(
-                image: NetworkImage(imageUrl),
+              image: widget.region.photoReg.isNotEmpty
+                  ? DecorationImage(
+                image: NetworkImage(widget.region.photoReg),
+                fit: BoxFit.cover,
+              )
+                  : const DecorationImage(
+                image: AssetImage('hawas-biya-logo-rm.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SizedBox(height: 8.0),
           Text(
-            widget.category.name,
+            widget.region.namer,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16.0,
@@ -85,28 +71,29 @@ class _CategoryCardState extends State<CategoryCard> {
 
 
 
+class Category {
+  final String id;
+  final String name;
+  final String idCat;
+  final String photoCat;
 
-class RegionCard extends StatefulWidget {
-  final Region region;
+  Category({required this.id,required this.idCat, required this.name, required this.photoCat});
+}
+class CategoryCard extends StatefulWidget {
+  final Category category;
 
-  RegionCard({required this.region});
+  CategoryCard({super.key, required this.category});
 
   @override
   State<StatefulWidget> createState() {
-    return _RegionCardState();
+    return _CategoryCardState();
   }
 }
 
-class _RegionCardState extends State<RegionCard> {
-  String baseStorageUrl =
-      "https://firebasestorage.googleapis.com/v0/b/hawas-biya-algeriaguide.appspot.com/o/files%2F";
-  late String imageUrl;
 
-  @override
-  void initState() {
-    super.initState();
-    imageUrl = baseStorageUrl + widget.region.imageUrl;
-  }
+
+class _CategoryCardState extends State<CategoryCard> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -123,15 +110,20 @@ class _RegionCardState extends State<RegionCard> {
                 width: 2.0,
               ),
               borderRadius: BorderRadius.circular(8.0),
-              image: DecorationImage(
-                image: NetworkImage(imageUrl),
+              image: widget.category.photoCat.isNotEmpty
+                  ? DecorationImage(
+                image: NetworkImage(widget.category.photoCat),
+                fit: BoxFit.cover,
+              )
+                  : const DecorationImage(
+                image: AssetImage('hawas-biya-logo-rm.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SizedBox(height: 8.0),
           Text(
-            widget.region.name,
+            widget.category.name,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16.0,
