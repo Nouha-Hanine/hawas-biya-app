@@ -572,7 +572,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Container(
             child: Text(
-              'No results found for the selected region and category.',
+              'No selected region and category.',
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
