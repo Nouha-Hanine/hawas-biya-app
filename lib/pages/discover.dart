@@ -1,32 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
+import 'package:file_picker/file_picker.dart';
 import 'map.dart';
 import 'favorites.dart';
 import 'profile.dart';
 import 'details.dart';
-class Region {
-  final String idr;
-  final String idReg;
-  final String namer;
-  final String photoReg;
-
-  Region({required this.idr,required this.idReg, required this.namer, required this.photoReg});
+class Place {
+  final String idPlace;
+  final String namePlace;
+  final String imageUrlPlace;
+  final String detailsPlace;
+  final String selectedCategoryId;
+  final String selectedRegionId;
+  Place({
+    required this.idPlace,
+    required this.namePlace,
+    required this.imageUrlPlace,
+    required this.detailsPlace,
+    required this.selectedCategoryId,
+    required this.selectedRegionId,
+  });
 }
 
-class RegionCard extends StatefulWidget {
-  final Region region;
 
-  RegionCard({super.key, required this.region});
+class PlaceCard extends StatelessWidget {
+  final Place place;
 
-  @override
-  State<StatefulWidget> createState() {
-    return _RegionCardState();
-  }
-}
+  PlaceCard({required this.place});
 
-class _RegionCardState extends State<RegionCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,31 +44,114 @@ class _RegionCardState extends State<RegionCard> {
                 width: 2.0,
               ),
               borderRadius: BorderRadius.circular(8.0),
-              image: widget.region.photoReg.isNotEmpty
-                  ? DecorationImage(
-                image: NetworkImage(widget.region.photoReg),
-                fit: BoxFit.cover,
-              )
-                  : const DecorationImage(
-                image: AssetImage('hawas-biya-logo-rm.png'),
+              image: DecorationImage(
+                image: NetworkImage(place.imageUrlPlace),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SizedBox(height: 8.0),
           Text(
-            widget.region.namer,
+            place.namePlace,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
           ),
+          SizedBox(height: 4.0),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailsPage(imageUrlPlace: place.imageUrlPlace,
+                    namePlace: place.namePlace,
+                    detailsPlace: place.detailsPlace,),
+                ),
+              );
+            },
+            child: Text('More Details'),
+          ),
         ],
       ),
     );
   }
 }
+class Region {
+  final String idr;
+  final String idReg;
+  final String namer;
+  final String photoReg;
+
+  Region({required this.idr,required this.idReg, required this.namer, required this.photoReg});
+}
+
+class RegionCard extends StatefulWidget {
+  final Region region;
+  final Function(String) onRegionSelected;
+  RegionCard({super.key, required this.region,required this.onRegionSelected});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _RegionCardState();
+  }
+}
+
+class _RegionCardState extends State<RegionCard> {
+  late String selectedRegionId;
+  bool isSelected = false;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        widget.onRegionSelected(widget.region.idReg);
+        setState(() {
+          selectedRegionId = widget.region.idReg;
+          isSelected = true;
+
+        }); // Appel de la fonction lors du clic
+      },
+      child: Container(
+        width: 100.0,
+        child: Column(
+          children: [
+            Container(
+              width: 110.0,
+              height: 150.0,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: isSelected ? Colors.red : Colors.orangeAccent,
+                  width: 2.0,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+                image: widget.region.photoReg.isNotEmpty
+                    ? DecorationImage(
+                  image: NetworkImage(widget.region.photoReg),
+                  fit: BoxFit.cover,
+                )
+                    : const DecorationImage(
+                  image: AssetImage('hawas-biya-logo-rm.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              widget.region.namer,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 
 
@@ -81,8 +166,9 @@ class Category {
 }
 class CategoryCard extends StatefulWidget {
   final Category category;
+  final Function(String) onCategorySelected; // Ajout de la fonction de gestion du clic
 
-  CategoryCard({super.key, required this.category});
+  CategoryCard({required this.category, required this.onCategorySelected});
 
   @override
   State<StatefulWidget> createState() {
@@ -93,55 +179,70 @@ class CategoryCard extends StatefulWidget {
 
 
 class _CategoryCardState extends State<CategoryCard> {
-
-
+  bool isSelected = false;
+  late String selectedCategoryId;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 100.0,
-      child: Column(
-        children: [
-          Container(
-            width: 110.0,
-            height: 150.0,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.orangeAccent,
-                width: 2.0,
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-              image: widget.category.photoCat.isNotEmpty
-                  ? DecorationImage(
-                image: NetworkImage(widget.category.photoCat),
-                fit: BoxFit.cover,
-              )
-                  : const DecorationImage(
-                image: AssetImage('hawas-biya-logo-rm.png'),
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        widget.onCategorySelected(widget.category.idCat);
+        setState(() {
+          selectedCategoryId = widget.category.idCat;
+          isSelected = true;
+
+        }); // Appel de la fonction lors du clic
+      },
+      child: Container(
+        width: 100.0,
+        child: Column(
+          children: [
+            Container(
+              width: 110.0,
+              height: 150.0,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: isSelected ? Colors.red : Colors.orangeAccent,
+                  width: 2.0,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+                image: widget.category.photoCat.isNotEmpty
+                    ? DecorationImage(
+                  image: NetworkImage(widget.category.photoCat),
+                  fit: BoxFit.cover,
+                )
+                    : const DecorationImage(
+                  image: AssetImage('hawas-biya-logo-rm.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            widget.category.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
+            SizedBox(height: 8.0),
+            Text(
+              widget.category.name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
+
+
 class DiscoverPage extends StatefulWidget {
+
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
 }
 class _DiscoverPageState extends  State<DiscoverPage> {
   int selectedIndex = 0;
+  late String selectedRegionId= '';
+  late String selectedCategoryId= '';
   Future<List<Region>> getRegions() async {
     try {
       // Récupérez la référence de la collection 'regions' dans Firestore
@@ -161,6 +262,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         );
       })
           .toList();
+
 
       return regions;
     } catch (e) {
@@ -189,7 +291,6 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         );
       })
           .toList();
-      
 
       return categories;
     } catch (e) {
@@ -197,8 +298,6 @@ class _DiscoverPageState extends  State<DiscoverPage> {
       return []; // Gestion de l'erreur
     }
   }
-
-
 
 
   @override
@@ -220,14 +319,26 @@ class _DiscoverPageState extends  State<DiscoverPage> {
             // Barre de recherche
             buildSearchBar(),
 
-            // Section des régions
-            RegionSection(),
+            // Afficher un message
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Please choose a region and a category to explore the available places within that region and category ',
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: Colors.green,
+                ),
+              ),
+            ),
 
+            // Section des régions
+            regionSection(),
             // Section des catégories
             CategorySection(),
 
             // Section des résultats
-            ResultsSection(context),
+        ResultsSection(context, selectedRegionId, selectedCategoryId),
+        
 
           ],
         ),
@@ -237,8 +348,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
   }
 
   Widget UserSection() {
-    // Ici, vous pouvez récupérer les informations de l'utilisateur depuis Firebase
-    // (photo, nom, etc.) et les afficher.
+   
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -246,19 +356,19 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         children: [
           // Container pour la photo
           Container(
-            width: 50.0, // Ajustez la largeur selon vos besoins
-            height: 50.0, // Ajustez la hauteur selon vos besoins
+            width: 50.0, 
+            height: 50.0, 
             decoration: BoxDecoration(
               border: Border.all(
                 color: Colors.orangeAccent,
-                width: 2.0, // Ajustez la largeur de la bordure selon vos besoins
+                width: 2.0, 
               ),
               shape: BoxShape.rectangle,
-              color: Colors.grey, // Vous pouvez remplacer cela par la vraie image
+              color: Colors.grey,
             ),
-            // Placeholder pour la photo de l'utilisateur
+           
             child: Icon(
-              Icons.person, // Vous pouvez remplacer cela par la vraie image
+              Icons.person, 
               color: Colors.white,
             ),
           ),
@@ -277,7 +387,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
                   ),
                 ),
                 Text(
-                  'Nom d\'utilisateur', // Remplacez cela par le vrai nom d'utilisateur
+                  'Nom d\'utilisateur', 
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -303,16 +413,14 @@ class _DiscoverPageState extends  State<DiscoverPage> {
           ),
         ),
         onChanged: (value) {
-          // Mettez en œuvre votre logique de filtrage ici en fonction de la valeur saisie
-          // par l'utilisateur (value).
-          // Par exemple, vous pouvez mettre à jour une liste filtrée.
+         
         },
       ),
     );
   }
 
 
-  Widget RegionSection() {
+  Widget regionSection() {
     return FutureBuilder<List<Region>>(
       future: getRegions(),
       builder: (context, snapshot) {
@@ -321,7 +429,15 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container(); // Gestion du cas où il n'y a pas de données
+          return Container(
+            child: Text(
+              'REGIONS',
+              style: TextStyle(
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
         } else {
           List<Region> regions = snapshot.data!;
 
@@ -329,7 +445,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: Colors.grey.shade400,
-                width: 2.0, // Ajustez la largeur de la bordure selon vos besoins
+                width: 2.0,
               ),
             ),
             margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -354,7 +470,15 @@ class _DiscoverPageState extends  State<DiscoverPage> {
                     children: regions.map((region) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: RegionCard(region: region),
+                        child: RegionCard(
+                          region: region,
+                          onRegionSelected: (selectedRegionId) {
+                            setState(() {
+                              // Mise à jour de selectedRegionId
+                              this.selectedRegionId = selectedRegionId;
+                            });
+                          },
+                        ),
                       );
                     }).toList(),
                   ),
@@ -367,7 +491,6 @@ class _DiscoverPageState extends  State<DiscoverPage> {
     );
   }
 
-
   Widget CategorySection() {
     return FutureBuilder<List<Category>>(
       future: getCategories(),
@@ -377,7 +500,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container(); // Gestion du cas où il n'y a pas de données
+          return Container();
         } else {
           List<Category> categories = snapshot.data!;
 
@@ -385,7 +508,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: Colors.grey.shade400,
-                width: 2.0, // Ajustez la largeur de la bordure selon vos besoins
+                width: 2.0,
               ),
             ),
             margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -410,7 +533,15 @@ class _DiscoverPageState extends  State<DiscoverPage> {
                     children: categories.map((category) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: CategoryCard(category: category),
+                        child: CategoryCard(
+                          category: category,
+                          onCategorySelected: (selectedCategoryId) {
+                            setState(() {
+                              // Mise à jour de selectedCategoryId
+                              this.selectedCategoryId = selectedCategoryId;
+                            });
+                          },
+                        ),
                       );
                     }).toList(),
                   ),
@@ -425,20 +556,93 @@ class _DiscoverPageState extends  State<DiscoverPage> {
 
 
 
-  Widget ResultsSection(BuildContext context) {
-    // Ici, vous pouvez récupérer les résultats depuis Firebase en fonction
-    // de la région et de la catégorie sélectionnées, et les afficher.
-    // Utilisez un StreamBuilder pour mettre à jour l'interface utilisateur en temps réel.
-    return Container(
-      // Placeholder pour la section des résultats
+  Widget ResultsSection(BuildContext context, String selectedRegionId, String selectedCategoryId) {
+    return StreamBuilder<QuerySnapshot>(
+
+      stream: FirebaseFirestore.instance
+          .collection('places')
+          .where('id-reg', isEqualTo: selectedRegionId)
+          .where('id-cat', isEqualTo: selectedCategoryId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Container(
+            child: Text(
+              'No results found for the selected region and category.',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        } else {
+          // Mappez les documents Firestore en objets Place
+          List<Place> places = snapshot.data!.docs
+              .map((doc) => Place(
+            idPlace: doc.id,
+            namePlace: doc['nom-place'] as String? ?? '',
+            imageUrlPlace: doc['photo-place'] as String? ?? '',
+            detailsPlace: doc['details'] as String? ?? '',
+           selectedCategoryId: doc['id-cat'] as String? ?? '',
+            selectedRegionId: doc['id-reg'] as String? ?? '',
+          ))
+              .toList();
+
+          return Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey.shade400,
+                width: 2.0,
+              ),
+            ),
+            margin: EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              children: [
+                // Titre de la section
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'RESULTS',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                // Utilisation de SingleChildScrollView pour permettre le défilement vertical
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: places.map((place) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: PlaceCard(place: place),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
+
+
+
+
 
   Widget _BottomNavigationBar(BuildContext context) {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore),
+          icon: Icon(Icons.airplanemode_active),
           label: 'Discover',
         ),
         BottomNavigationBarItem(
