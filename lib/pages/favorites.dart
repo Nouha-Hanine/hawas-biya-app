@@ -1,33 +1,135 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'map.dart';
 import 'discover.dart';
+import 'map.dart';
 import 'profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class Place {
+  final String idPlace;
+  final String namePlace;
+  final String imageUrlPlace;
+  final String detailsPlace;
+  final String selectedCategoryId;
+  final String selectedRegionId;
+
+  Place({
+    required this.idPlace,
+    required this.namePlace,
+    required this.imageUrlPlace,
+    required this.detailsPlace,
+    required this.selectedCategoryId,
+    required this.selectedRegionId,
+  });
+}
+
+class Utilisateur {
+  final String uid;
+
+  Utilisateur({required this.uid});
+}
 
 class Favorites extends StatefulWidget {
+  final Utilisateur? utilisateur;
+  final Place? place;
+
+  Favorites({
+    this.utilisateur,
+    this.place,
+  });
+
   @override
-  _FavoritesState createState() => _FavoritesState();
+  _FavorisPageState createState() => _FavorisPageState();
 }
-class _FavoritesState extends  State<Favorites> {
+
+class _FavorisPageState extends State<Favorites> {
+  List<Place> favorisPlaces = [];
   int selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadFavoris();
+  }
+
+  Future<void> loadFavoris() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      String uid = currentUser.uid;
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('favoris')
+          .where('uid', isEqualTo: uid)
+          .get();
+
+      List<Place> places = [];
+
+      for (QueryDocumentSnapshot document in querySnapshot.docs) {
+        String placeId = document['id-place'];
+
+        DocumentSnapshot placeSnapshot = await FirebaseFirestore.instance
+            .collection('places')
+            .doc(placeId)
+            .get();
+
+        places.add(Place(
+          idPlace: placeSnapshot['id-place'],
+          namePlace: placeSnapshot['nom-place'],
+          imageUrlPlace: placeSnapshot['photo-place'],
+          detailsPlace: '',
+          selectedCategoryId: '',
+          selectedRegionId: '',
+
+        ));
+      }
+
+      setState(() {
+        favorisPlaces = places;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorites'),
+        title: Text('Favoris'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-            Text('An adventure country is waiting for you , Here you will find all your favorites corners , let start with "LIKE" some places you would like to visit it' ,
-          textAlign: TextAlign.center, // Alignement du texte au centre
-         style: TextStyle(
-          color: Colors.green, // Changer la couleur du texte
-          fontSize: 20.0,
-          fontWeight: FontWeight.bold
-        ))
+            Expanded(
+              child: ListView.builder(
+                itemCount: favorisPlaces.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Image.network(
+                      favorisPlaces[index].imageUrlPlace,
+                      width: 50.0,
+                      height: 50.0,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(favorisPlaces[index].namePlace),
+                    trailing: IconButton(
+                      icon: Icon(Icons.favorite, color: Colors.red),
+                      onPressed: () async {
+                        await FirebaseFirestore.instance
+                            .collection('favoris')
+                            .doc(favorisPlaces[index].idPlace)
+                            .delete();
+                        // Rechargez la liste des favoris
+                        await loadFavoris();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -35,25 +137,23 @@ class _FavoritesState extends  State<Favorites> {
     );
   }
 
-
-
   Widget _BottomNavigationBar(BuildContext context) {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore,color: Colors.green),
+          icon: Icon(Icons.airplanemode_active, color: Colors.green),
           label: 'Discover',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.map,color: Colors.green),
+          icon: Icon(Icons.map, color: Colors.green),
           label: 'Map',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite,color: Colors.green),
+          icon: Icon(Icons.favorite, color: Colors.green),
           label: 'Favorites',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person,color: Colors.green),
+          icon: Icon(Icons.person, color: Colors.green),
           label: 'Profile',
         ),
       ],
@@ -63,18 +163,13 @@ class _FavoritesState extends  State<Favorites> {
     );
   }
 
-
-// Fonction appelée lorsqu'un élément de la barre de navigation est cliqué
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
-
     });
 
-    // Utilisez Navigator pour naviguer vers la page correspondante
     switch (index) {
       case 2:
-      // Vous êtes déjà sur la page Discover, donc pas besoin de navigation ici
         break;
       case 0:
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DiscoverPage()));
