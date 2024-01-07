@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'map.dart';
@@ -67,7 +68,9 @@ class PlaceCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => DetailsPage(imageUrlPlace: place.imageUrlPlace,
                     namePlace: place.namePlace,
-                    detailsPlace: place.detailsPlace,),
+                    detailsPlace: place.detailsPlace,
+                    utilisateur: null,
+                    place: null,),
                 ),
               );
             },
@@ -302,6 +305,8 @@ class _DiscoverPageState extends  State<DiscoverPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Discover'),
@@ -348,7 +353,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
   }
 
   Widget UserSection() {
-   
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -356,19 +361,19 @@ class _DiscoverPageState extends  State<DiscoverPage> {
         children: [
           // Container pour la photo
           Container(
-            width: 50.0, 
-            height: 50.0, 
+            width: 50.0,
+            height: 50.0,
             decoration: BoxDecoration(
               border: Border.all(
                 color: Colors.orangeAccent,
-                width: 2.0, 
+                width: 2.0,
               ),
               shape: BoxShape.rectangle,
               color: Colors.grey,
             ),
-           
+
             child: Icon(
-              Icons.person, 
+              Icons.person,
               color: Colors.white,
             ),
           ),
@@ -387,7 +392,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
                   ),
                 ),
                 Text(
-                  'Nom d\'utilisateur', 
+                  'Nom d\'utilisateur',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -413,7 +418,7 @@ class _DiscoverPageState extends  State<DiscoverPage> {
           ),
         ),
         onChanged: (value) {
-         
+
         },
       ),
     );
