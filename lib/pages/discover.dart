@@ -348,7 +348,6 @@ class _DiscoverPageState extends  State<DiscoverPage> {
           ],
         ),
       ),
-      bottomNavigationBar: _BottomNavigationBar(context),
     );
   }
 
@@ -642,58 +641,3 @@ class _DiscoverPageState extends  State<DiscoverPage> {
 
 
 
-
-  Widget _BottomNavigationBar(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.airplanemode_active),
-          label: 'Discover',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map,color: Colors.green),
-          label: 'Map',
-        ),
-
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite,color: Colors.green),
-          label: 'Favorites',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person,color: Colors.green),
-          label: 'Profile',
-        ),
-      ],
-      currentIndex: selectedIndex,
-      selectedItemColor: Colors.red,
-      onTap: onItemTapped,
-    );
-  }
-
-
-// Fonction appelée lorsqu'un élément de la barre de navigation est cliqué
-void onItemTapped(int index) {
-  setState(() {
-    selectedIndex = index;
-
-  });
-
-  // Utilisez Navigator pour naviguer vers la page correspondante
-  switch (index) {
-    case 0:
-    // Vous êtes déjà sur la page Discover, donc pas besoin de navigation ici
-      break;
-    case 1:
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Map()));
-      break;
-    case 2:
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Favorites()));
-      break;
-    case 3:
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Profile()));
-      break;
-    default:
-      break;
-  }
-}
-}
