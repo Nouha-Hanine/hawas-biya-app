@@ -35,16 +35,6 @@ class _HomePageState extends State {
 
   @override
   Widget build(BuildContext context) {
-    User user = FirebaseAuth.instance.currentUser!;
-    if (user != null) {
-      print("user is loged in");
-      String? name = user.displayName;
-      String? email = user.email;
-      //Uri? photoUrl = user.photoURL;
-      String? uid = user.uid;
-    } else {
-      print("user is  NOT loged in");
-    }
 
 
     return Scaffold(
@@ -52,11 +42,11 @@ class _HomePageState extends State {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         onTap: (index) => _changeTab(index),
-        selectedItemColor: Color(0xFF0A8B0E),
-        unselectedItemColor: Color(0xFFD2BD4D),
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.green,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.explore), label: "Discover"),
+              icon: Icon(Icons.airplanemode_active), label: "Discover"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map",),
           BottomNavigationBarItem(
               icon: Icon(Icons.favorite), label: "Favorites"),
