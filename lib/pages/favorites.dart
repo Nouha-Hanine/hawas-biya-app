@@ -133,56 +133,7 @@ class _FavorisPageState extends State<Favorites> {
           ],
         ),
       ),
-      bottomNavigationBar: _BottomNavigationBar(context),
     );
   }
 
-  Widget _BottomNavigationBar(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.airplanemode_active, color: Colors.green),
-          label: 'Discover',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map, color: Colors.green),
-          label: 'Map',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite, color: Colors.green),
-          label: 'Favorites',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person, color: Colors.green),
-          label: 'Profile',
-        ),
-      ],
-      currentIndex: selectedIndex,
-      selectedItemColor: Colors.red,
-      onTap: onItemTapped,
-    );
-  }
-
-  void onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-
-    switch (index) {
-      case 2:
-        break;
-      case 0:
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DiscoverPage()));
-        break;
-      case 1:
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Map()));
-        break;
-      case 3:
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Profile()));
-        break;
-      default:
-        break;
-    }
-  }
-}
 
