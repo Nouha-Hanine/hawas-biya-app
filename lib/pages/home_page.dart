@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hawas_biya_algeria_guide/appPages/discover_page.dart';
+import 'package:hawas_biya_algeria_guide/appPages/favorite_page.dart';
 import 'package:hawas_biya_algeria_guide/appPages/map_page.dart';
 import 'package:hawas_biya_algeria_guide/appPages/profile_page.dart';
 import 'package:hawas_biya_algeria_guide/models/user.dart';
@@ -19,13 +21,9 @@ class _HomePageState extends State {
   int _selectedTab = 0;
 
   List _pages = [
-    Center( //call class discover de la page discover
-      child: Text("Discover "), //TODO add for discover nouha, name of user
-    ),
+    DiscoverPage(),//TODO add for discover nouha, name of user
     MapPage(),
-    Center( //same here tu peux appeler la class Favorite() que tu as codé
-      child: Text("Favorites"), //TODO add users X places for nouha favorites
-    ),
+    Favorites(),//TODO add users X places for nouha favorites
     ProfilePage(),
   ];
 
@@ -37,7 +35,6 @@ class _HomePageState extends State {
 
   @override
   Widget build(BuildContext context) {
-    //partie base de données
     User user = FirebaseAuth.instance.currentUser!;
     if (user != null) {
       print("user is loged in");
@@ -52,20 +49,19 @@ class _HomePageState extends State {
 
     return Scaffold(
       body: _pages[_selectedTab],
-      //une bottomnavigationbbar unique 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         onTap: (index) => _changeTab(index),
-        selectedItemColor: Colors.red,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color(0xFF0A8B0E),
+        unselectedItemColor: Color(0xFFD2BD4D),
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.airplanemode_active), label: "Discover"),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),//you can change the icons par rapport à ce que tu as deja choisis
+              icon: Icon(Icons.explore), label: "Discover"),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map",),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline), label: "Favorites"),
+              icon: Icon(Icons.favorite), label: "Favorites"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_rounded), label: "Profile"),
+              icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
