@@ -49,15 +49,18 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> addToFavorites() async {
-
-      Utilisateur? utilisateur = widget.utilisateur;
+      User? currentUser = FirebaseAuth.instance.currentUser;
       Place? place = widget.place;
-      if (utilisateur != null && place != null) {
-      await FirebaseFirestore.instance.collection('favoris').add({
-        'uid': utilisateur.uid,
-        'id-place': place.idPlace,
-      });
-    }}
+
+      if (currentUser != null && place != null) {
+        String uid = currentUser.uid;
+
+        await FirebaseFirestore.instance.collection('favoris').add({
+          'uid': uid,
+          'id-place': place.idPlace,
+        });
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Details'),
