@@ -405,22 +405,62 @@ class _DiscoverPageState extends  State<DiscoverPage> {
   }
 
 
-  Widget buildSearchBar() {
+ Widget buildSearchBar() {
     return Container(
       padding: EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Search a place you want to visit...',
+          hintText: 'Search a place by name...',
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
         ),
-        onChanged: (value) {
-
+        onSubmitted: (searchQuery) {
+       
+          searchPlacesByName(searchQuery);
         },
       ),
     );
+  }
+
+  void searchPlacesByName(String searchQuery) {
+    FirebaseFirestore.instance
+        .collection('places')
+        .where('nom-place', isEqualTo: searchQuery)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        DocumentSnapshot placeDocument = snapshot.docs[0];
+
+        Place p = Place(
+          idPlace: placeDocument.id,
+          namePlace: placeDocument['nom-place'] as String? ?? '',
+          imageUrlPlace: placeDocument['photo-place'] as String? ?? '',
+          detailsPlace: placeDocument['details'] as String? ?? '', selectedCategoryId: '', selectedRegionId: '',
+
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailsPage(
+              imageUrlPlace: p.imageUrlPlace,
+              namePlace: p.namePlace,
+              detailsPlace: p.detailsPlace,
+              utilisateur: null,
+              place: null,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Place not found...'),
+          ),
+        );
+      }
+    });
   }
 
 
